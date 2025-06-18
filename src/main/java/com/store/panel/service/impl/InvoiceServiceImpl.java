@@ -1,17 +1,13 @@
 package com.store.panel.service.impl;
 
-import com.store.panel.entity.Customer;
 import com.store.panel.entity.Invoice;
-import com.store.panel.entity.Product;
-import com.store.panel.repository.CustomerRepository;
 import com.store.panel.repository.InvoiceRepository;
-import com.store.panel.repository.ProductRepository;
 import com.store.panel.service.interfaces.IInvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class InvoiceServiceImpl implements IInvoiceService {
@@ -19,30 +15,37 @@ public class InvoiceServiceImpl implements IInvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
     @Override
-    public List<Invoice> findAll() {
+    public List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
     }
 
     @Override
-    public Invoice save(Invoice invoice) {
-        // Validar existencia de Customer y Products
-        Customer customer = customerRepository.findById(invoice.getCustomer().getId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        invoice.setCustomer(customer);
+    public Optional<Invoice> getInvoiceById(Long id) {
+        return invoiceRepository.findById(id);
+    }
 
-        List<Product> validatedProducts = invoice.getProducts().stream()
-                .map(p -> productRepository.findById(p.getId())
-                        .orElseThrow(() -> new RuntimeException("Product not found: " + p.getId())))
-                .collect(Collectors.toList());
-        invoice.setProducts(validatedProducts);
-
+    @Override
+    public Invoice createInvoice(Invoice invoice) {
         return invoiceRepository.save(invoice);
+    }
+
+    @Override
+    public Optional<Invoice> updateInvoice(Long id, Invoice invoice) {
+        return invoiceRepository.findById(id).map(existing -> {
+            existing.setDate(invoice.getDate());
+            existing.setCustomer(invoice.getCustomer());
+            existing.setProducts(invoice.getProducts());
+            return invoiceRepository.save(existing);
+        });
+    }
+
+    @Override
+    public boolean deleteInvoice(Long id) {
+        if (invoiceRepository.existsById(id)) {
+            invoiceRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

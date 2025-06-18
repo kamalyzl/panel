@@ -1,39 +1,54 @@
 package com.store.panel.controller;
 
-import com.store.panel.dto.CustomerDTO;
 import com.store.panel.entity.Customer;
-import com.store.panel.mapper.CustomerMapper;
-import com.store.panel.service.interfaces.ICustomerService;
+import com.store.panel.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/customers")
-@Validated
 public class CustomerController {
-    @Autowired
-    private ICustomerService customerService;
 
     @Autowired
-    private CustomerMapper customerMapper;
+    private CustomerServiceImpl customerService;
 
     @GetMapping
-    public List<CustomerDTO> getAll() {
-        return customerService.findAll()
-                .stream()
-                .map(customerMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Customer> getAllCustomers() {
+        return customerService.getAllCustomers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        return customerService.getCustomerById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDTO> create(@Valid @RequestBody CustomerDTO dto) {
-        Customer saved = customerService.save(customerMapper.toEntity(dto));
-        return ResponseEntity.ok(customerMapper.toDto(saved));
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+        Customer saved = customerService.createCustomer(customer);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer customer) {
+        return customerService.updateCustomer(id, customer)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+        if (customerService.deleteCustomer(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
+
