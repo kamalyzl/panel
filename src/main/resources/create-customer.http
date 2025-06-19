@@ -1,0 +1,12 @@
+### Crear un nuevo Customer
+POST http://localhost:8080/api/customers
+Content-Type: application/json
+
+{
+  "name": "Ana",
+  "lastname": "García",
+  "dni": "12345678",
+  "address": "Av. Siempre Viva 123",
+  "numberPhone": "987654321",
+  "email": "ana.garcia@example.com"
+}

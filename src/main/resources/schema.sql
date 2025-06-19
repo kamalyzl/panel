@@ -1,8 +1,13 @@
  CREATE TABLE IF NOT EXISTS customers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE
+    lastname VARCHAR(100) NOT NULL,
+    dni VARCHAR(8) NOT NULL UNIQUE,
+    address VARCHAR(255),
+    number_phone VARCHAR(20),
+    email VARCHAR(255) UNIQUE
 );
+
 
 CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,

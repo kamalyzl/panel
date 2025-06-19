@@ -2,40 +2,58 @@ package com.store.panel.service.impl;
 
 import com.store.panel.entity.Customer;
 import com.store.panel.repository.CustomerRepository;
+import com.store.panel.dto.CustomerDTO;
+import com.store.panel.mapper.CustomerMapper;
 import com.store.panel.service.interfaces.ICustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements ICustomerService {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
     @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerDTO> getAllCustomerDTOs() {
+        return customerRepository.findAll()
+                .stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
+    public Optional<CustomerDTO> getCustomerDTOById(Long id) {
+        return customerRepository.findById(id)
+                .map(customerMapper::toDto);
     }
 
     @Override
-    public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public CustomerDTO createCustomerFromDTO(CustomerDTO dto) {
+        System.out.println("DTO recibido: {}" + dto);
+        Customer entity = customerMapper.toEntity(dto);  // ← importante
+        System.out.println("Entidad generada: {}" + entity);
+        Customer saved = customerRepository.save(entity);
+        return customerMapper.toDto(saved);
     }
 
     @Override
-    public Optional<Customer> updateCustomer(Long id, Customer customer) {
+    public Optional<CustomerDTO> updateCustomerFromDTO(Long id, CustomerDTO dto) {
         return customerRepository.findById(id).map(existing -> {
-            existing.setName(customer.getName());
-            existing.setEmail(customer.getEmail());
-            return customerRepository.save(existing);
+            existing.setName(dto.getName());
+            existing.setLastname(dto.getLastname());
+            existing.setDni(dto.getDni());
+            existing.setAddress(dto.getAddress());
+            existing.setNumberPhone(dto.getNumberPhone());
+            existing.setEmail(dto.getEmail());
+            Customer updated = customerRepository.save(existing);
+            return customerMapper.toDto(updated);
         });
     }
 

@@ -1,5 +1,6 @@
 package com.store.panel.controller;
 
+import com.store.panel.dto.CustomerDTO;
 import com.store.panel.entity.Customer;
 import com.store.panel.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
@@ -18,26 +19,26 @@ public class CustomerController {
     private CustomerServiceImpl customerService;
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public List<CustomerDTO> getAllCustomers() {
+        return customerService.getAllCustomerDTOs();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id)
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+        return customerService.getCustomerDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
-        Customer saved = customerService.createCustomer(customer);
+    public ResponseEntity<CustomerDTO> createCustomer(@Valid @RequestBody CustomerDTO customer) {
+        CustomerDTO saved = customerService.createCustomerFromDTO(customer);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody Customer customer) {
-        return customerService.updateCustomer(id, customer)
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDTO customer) {
+        return customerService.updateCustomerFromDTO(id, customer)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
