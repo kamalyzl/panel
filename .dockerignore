@@ -1,0 +1,24 @@
+# Carpetas de Gradle
+.gradle
+build/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de Git
+.git
+.gitignore
+
+# Archivos de entorno
+.env
