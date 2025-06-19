@@ -2,9 +2,9 @@ package com.store.panel.controller;
 
 import com.store.panel.dto.ProductDTO;
 import com.store.panel.entity.Product;
-import com.store.panel.mapper.ProductMapper;
-import com.store.panel.service.interfaces.IProductService;
+import com.store.panel.service.interfaces.ProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,41 +16,34 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
-    @Autowired
-    private IProductService productService;
 
-    @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    private final ProductService productService;
+
+    @PostMapping
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO dto) {
+        return ResponseEntity.ok(productService.createProduct(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product saved = productService.createProduct(product);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
-        return productService.updateProduct(id, product)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
+        return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        if (productService.deleteProduct(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }

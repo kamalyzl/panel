@@ -1,50 +1,63 @@
 package com.store.panel.service.impl;
 
+import com.store.panel.dto.ProductDTO;
 import com.store.panel.entity.Product;
+import com.store.panel.mapper.ProductMapper;
 import com.store.panel.repository.ProductRepository;
-import com.store.panel.service.interfaces.IProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.store.panel.service.interfaces.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl implements IProductService {
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public ProductDTO createProduct(ProductDTO dto) {
+        Product entity = productMapper.toEntity(dto);
+        return productMapper.toDto(productRepository.save(entity));
     }
 
     @Override
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public ProductDTO getProductById(Long id) {
+        return productRepository.findById(id)
+                .map(productMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public List<ProductDTO> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Product> updateProduct(Long id, Product product) {
-        return productRepository.findById(id).map(existing -> {
-            existing.setName(product.getName());
-            existing.setPrice(product.getPrice());
-            return productRepository.save(existing);
-        });
+    public ProductDTO updateProduct(Long id, ProductDTO dto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setTotalQuantity(dto.getTotalQuantity());
+        product.setAvailableQuantity(dto.getAvailableQuantity());
+        product.setCategory(dto.getCategory());
+        product.setPrice(dto.getPrice());
+
+        return productMapper.toDto(productRepository.save(product));
     }
 
     @Override
-    public boolean deleteProduct(Long id) {
-        if (productRepository.existsById(id)) {
-            productRepository.deleteById(id);
-            return true;
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Product not found with id: " + id);
         }
-        return false;
+        productRepository.deleteById(id);
     }
 }
