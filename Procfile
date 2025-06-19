@@ -1,1 +1,1 @@
-web: java -jar build/libs/tu-app.jar
+web: java -jar build/libs/panel-0.0.1-SNAPSHOT.jar
