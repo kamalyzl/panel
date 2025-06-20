@@ -1,19 +1,20 @@
 package com.store.panel.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class InvoiceDTO {
     private Long id;
-
-    @NotNull
+    private LocalDate invoiceDate;
+    private BigDecimal totalAmount;
     private Long customerId;
-
-    @NotEmpty
-    private List<Long> productIds;
-
-    private LocalDateTime createdAt;
+    private String customerName;
+    private List<InvoiceDetailDTO> details;
 }

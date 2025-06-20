@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ICustomerService {
     List<CustomerDTO> getAllCustomerDTOs();
-    Optional<CustomerDTO> getCustomerDTOById(Long id);
+    CustomerDTO getCustomerDTOById(Long id);
     CustomerDTO createCustomerFromDTO(CustomerDTO customer);
     Optional<CustomerDTO> updateCustomerFromDTO(Long id, CustomerDTO customer);
     boolean deleteCustomer(Long id);

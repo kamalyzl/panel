@@ -1,12 +1,12 @@
 package com.store.panel.service.impl;
 
 import com.store.panel.entity.Customer;
+import com.store.panel.exception.ResourceNotFoundException;
 import com.store.panel.repository.CustomerRepository;
 import com.store.panel.dto.CustomerDTO;
 import com.store.panel.mapper.CustomerMapper;
 import com.store.panel.service.interfaces.ICustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +29,15 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Optional<CustomerDTO> getCustomerDTOById(Long id) {
-        return customerRepository.findById(id)
-                .map(customerMapper::toDto);
+    public CustomerDTO getCustomerDTOById(Long id) {
+        Customer customer  = customerRepository
+                .findById(id).orElseThrow(() ->  new ResourceNotFoundException("Customer not found"));
+        return customerMapper.toDto(customer);
     }
 
     @Override
     public CustomerDTO createCustomerFromDTO(CustomerDTO dto) {
-        System.out.println("DTO recibido: {}" + dto);
-        Customer entity = customerMapper.toEntity(dto);  // ← importante
-        System.out.println("Entidad generada: {}" + entity);
+        Customer entity = customerMapper.toEntity(dto);
         Customer saved = customerRepository.save(entity);
         return customerMapper.toDto(saved);
     }

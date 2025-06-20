@@ -2,6 +2,7 @@ package com.store.panel.service.impl;
 
 import com.store.panel.dto.ProductDTO;
 import com.store.panel.entity.Product;
+import com.store.panel.exception.ResourceNotFoundException;
 import com.store.panel.mapper.ProductMapper;
 import com.store.panel.repository.ProductRepository;
 import com.store.panel.service.interfaces.ProductService;
@@ -28,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProductById(Long id) {
         return productRepository.findById(id)
                 .map(productMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
@@ -56,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found with id: " + id);
+            throw new ResourceNotFoundException("Product not found with id: " + id);
         }
         productRepository.deleteById(id);
     }

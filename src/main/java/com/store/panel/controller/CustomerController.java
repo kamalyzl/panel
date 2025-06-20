@@ -25,9 +25,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerDTOById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(customerService.getCustomerDTOById(id));
     }
 
     @PostMapping

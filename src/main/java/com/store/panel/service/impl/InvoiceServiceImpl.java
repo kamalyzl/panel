@@ -1,51 +1,60 @@
 package com.store.panel.service.impl;
 
+import com.store.panel.dto.InvoiceDTO;
+import com.store.panel.entity.Customer;
 import com.store.panel.entity.Invoice;
+import com.store.panel.exception.ResourceNotFoundException;
+import com.store.panel.mapper.InvoiceMapper;
+import com.store.panel.repository.CustomerRepository;
 import com.store.panel.repository.InvoiceRepository;
 import com.store.panel.service.interfaces.IInvoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class InvoiceServiceImpl implements IInvoiceService {
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final CustomerRepository customerRepository;
+    private final InvoiceMapper invoiceMapper;
 
     @Override
-    public List<Invoice> getAllInvoices() {
-        return invoiceRepository.findAll();
+    public InvoiceDTO createInvoice(InvoiceDTO dto) {
+        Customer customer = customerRepository.findById(dto.getCustomerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+
+        Invoice invoice = invoiceMapper.toEntity(dto);
+        invoice.setCustomer(customer);
+
+        BigDecimal total = invoice.getDetails().stream()
+                .map(d -> d.getPrice().multiply(BigDecimal.valueOf(d.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        invoice.setTotalAmount(total);
+
+        Invoice saved = invoiceRepository.save(invoice);
+        return invoiceMapper.toDto(saved);
     }
 
     @Override
-    public Optional<Invoice> getInvoiceById(Long id) {
-        return invoiceRepository.findById(id);
+    public List<InvoiceDTO> getAllInvoices() {
+        return invoiceRepository.findAll().stream()
+                .map(invoiceMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Invoice createInvoice(Invoice invoice) {
-        return invoiceRepository.save(invoice);
+    public InvoiceDTO getInvoiceById(Long id) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
+        return invoiceMapper.toDto(invoice);
     }
 
     @Override
-    public Optional<Invoice> updateInvoice(Long id, Invoice invoice) {
-        return invoiceRepository.findById(id).map(existing -> {
-            existing.setDate(invoice.getDate());
-            existing.setCustomer(invoice.getCustomer());
-            existing.setProducts(invoice.getProducts());
-            return invoiceRepository.save(existing);
-        });
-    }
-
-    @Override
-    public boolean deleteInvoice(Long id) {
-        if (invoiceRepository.existsById(id)) {
-            invoiceRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public void deleteInvoice(Long id) {
+        invoiceRepository.deleteById(id);
     }
 }
