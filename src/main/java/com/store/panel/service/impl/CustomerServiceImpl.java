@@ -24,10 +24,12 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public List<CustomerDTO> getAllCustomerDTOs() {
-        return customerRepository.findAll()
-                .stream()
+        log.info("[SERVICE] Fetching all customers");
+        List<Customer> customers = customerRepository.findAll();
+        log.debug("[DB] Found {} customers", customers.size());
+        return customers.stream()
                 .map(customerMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -39,8 +41,11 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public CustomerDTO createCustomerFromDTO(CustomerDTO dto) {
+        log.info("[SERVICE] Creating customer with name: {} {}", dto.getName(), dto.getLastname());
         Customer entity = customerMapper.toEntity(dto);
+        log.debug("[MAPPER] Mapped entity: {}", entity);
         Customer saved = customerRepository.save(entity);
+        log.info("[DB] Customer created with ID: {}", saved.getId());
         return customerMapper.toDto(saved);
     }
 
