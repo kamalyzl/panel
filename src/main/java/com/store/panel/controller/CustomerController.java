@@ -4,6 +4,7 @@ import com.store.panel.dto.CustomerDTO;
 import com.store.panel.entity.Customer;
 import com.store.panel.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
+@Slf4j
 public class CustomerController {
 
     @Autowired
@@ -30,6 +32,7 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerDTO> createCustomer(@Valid @RequestBody CustomerDTO customer) {
+        log.info("[SERVICE] Creating customer with name: {}", customer.toString());
         CustomerDTO saved = customerService.createCustomerFromDTO(customer);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
