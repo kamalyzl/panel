@@ -1,38 +1,28 @@
-# 🧾 Spring Boot Store API
+# 🧾 Panel de Facturación - API REST con Spring Boot
 
-API REST para gestionar productos, clientes y facturas, construida con Spring Boot + PostgreSQL.
-
----
-
-## 🚀 Despliegue en Railway
-
-1. Sube tu proyecto a un repositorio en GitHub.
-2. Entra a [https://railway.app](https://railway.app) e inicia sesión.
-3. Crea un nuevo proyecto desde tu repo.
-4. Railway detectará tu app Java. Agrega las siguientes variables en la pestaña "Variables":
-
-```
-PORT=8080
-SPRING_DATASOURCE_URL=jdbc:postgresql://... (Railway te la da)
-SPRING_DATASOURCE_USERNAME=...
-SPRING_DATASOURCE_PASSWORD=...
-```
-
-5. Railway generará automáticamente una URL para probar tu API.
+Este proyecto es un sistema básico de gestión de productos, clientes y facturas desarrollado con **Spring Boot**, **PostgreSQL**, **Docker** y **Gradle**.
 
 ---
 
-## 💻 Ejecutar localmente con Docker
+## 🚀 Requisitos Previos
 
-### Requisitos
-- Docker y Docker Compose
-- JDK 17
-- Gradle instalado
+- Java 21 (JDK instalado)
+- Gradle 8.x
+- Docker y Docker Compose (para base de datos local)
+- IDE (IntelliJ, VSCode, etc.)
 
-### 1. Levantar PostgreSQL
+---
+
+## ⚙️ Instalación y Ejecución en Local
+
+### 1. Clona el repositorio
+
+ 
 ```bash
-docker-compose up -d
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
 ```
+
 
 ### 2. Configura tu `application-local.properties`
 ```properties
@@ -48,6 +38,12 @@ server.port=8080
 ```bash
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
+
+## 🧪 Colección Postman
+
+Puedes importar esta colección en Postman para probar los endpoints:
+
+👉 [Descargar colección Postman](./Panel.postman_collection.json)
 
 ---
 
@@ -82,41 +78,9 @@ curl -X POST http://localhost:8080/api/products \
 ```
 
 ---
+ 
 
-## 📂 Estructura del proyecto
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/store/panel/
-│   │       ├── controller/
-│   │       ├── dto/
-│   │       ├── entity/
-│   │       ├── mapper/
-│   │       ├── repository/
-│   │       └── service/
-│   └── resources/
-│       ├── application.properties
-│       └── application-local.properties
-```
-
----
-
-## 🛠️ Compilar y generar JAR
-```bash
-./gradlew clean build
-```
-El archivo JAR se generará en `build/libs/panel-0.0.1-SNAPSHOT.jar`
-
----
-
-## 🐳 Docker (producción)
-```bash
-docker build -t spring-panel .
-docker run -p 8080:8080 spring-panel
-```
-
+ 
 ---
 
 ## 📄 Licencia
