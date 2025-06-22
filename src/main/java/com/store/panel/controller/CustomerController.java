@@ -1,11 +1,10 @@
 package com.store.panel.controller;
 
 import com.store.panel.dto.CustomerDTO;
-import com.store.panel.entity.Customer;
 import com.store.panel.service.impl.CustomerServiceImpl;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
+@RequiredArgsConstructor
 @Slf4j
 public class CustomerController {
 
-    @Autowired
-    private CustomerServiceImpl customerService;
+    private final CustomerServiceImpl customerService;
 
     @GetMapping
     public List<CustomerDTO> getAllCustomers() {
