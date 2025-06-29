@@ -32,6 +32,10 @@ public class InvoiceServiceImpl implements IInvoiceService {
         Invoice invoice = invoiceMapper.toEntity(dto);
         invoice.setCustomer(customer);
 
+        if (invoice.getDetails() != null) {
+            invoice.getDetails().forEach(detail -> detail.setInvoice(invoice));
+        }
+
         BigDecimal total = invoice.getDetails().stream()
                 .map(d -> d.getPrice().multiply(BigDecimal.valueOf(d.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
